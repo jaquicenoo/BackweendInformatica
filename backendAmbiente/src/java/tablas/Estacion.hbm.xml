@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 4/04/2018 02:40:15 PM by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="tablas.Estacion" table="estacion" catalog="monitoreoambiente" optimistic-lock="version">
+        <id name="idEstacion" type="int">
+            <column name="idEstacion" />
+            <generator class="assigned" />
+        </id>
+        <property name="nombre" type="string">
+            <column name="Nombre" length="100" />
+        </property>
+        <property name="longitud" type="big_decimal">
+            <column name="Longitud" precision="20" scale="10" />
+        </property>
+        <property name="latitud" type="big_decimal">
+            <column name="Latitud" precision="20" scale="10" />
+        </property>
+        <property name="altura" type="big_decimal">
+            <column name="Altura" precision="20" scale="10" />
+        </property>
+        <property name="descripcion" type="string">
+            <column name="Descripcion" length="100" />
+        </property>
+        <set name="sensors" table="sensor" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="idEstacion" />
+            </key>
+            <one-to-many class="tablas.Sensor" />
+        </set>
+    </class>
+</hibernate-mapping>

@@ -117,7 +117,10 @@ public class MedicionJson {
     public void setFecha(Date fecha) {
         this.Fecha = fecha;
     }
-
+    
+    public Date getFechayHora(){       
+        return new Date(this.Fecha.getTime() + this.Hora.getTime());
+    }
 
     /**
      * Get the value of relacionsensorestacion

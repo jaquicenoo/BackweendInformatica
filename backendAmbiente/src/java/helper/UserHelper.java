@@ -8,10 +8,12 @@ package helper;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import static jdk.nashorn.internal.runtime.regexp.joni.constants.AsmConstants.S;
 import org.hibernate.Query;
@@ -72,6 +74,37 @@ public class UserHelper {
       List<String> dt = new ArrayList<>();
       filter.forEach(x-> dt.add(x.getFecha()+sp+x.getHora()+sp+x.getDatoObtenido()+sp+x.getUnidades()) );
       datos.put(se, dt.toArray(new String[dt.size()]));
+      }
+      
+      tx.commit();
+      sesion.close();
+      
+      return datos;
+    }
+      public HashMap getUltimaMedicionByEstacion(int idEstacion){
+      Session sesion = HibernateUtil.getSessionFactory().openSession();
+      Transaction tx = sesion.beginTransaction();
+      
+      HashMap<String,String> datos = new HashMap<>();
+      List<MedicionJson> ls = new ArrayList<>();
+      List<String> sensores ;
+      
+      SQLQuery stq = sesion.createSQLQuery("call getAllTipoSensoresByEstaciones(:_idestacion)");
+      stq.setInteger("_idestacion",idEstacion);
+      sensores = stq.list();      
+      SQLQuery stq2 = sesion.createSQLQuery("call getAllMedicionesByEstaciones(:_idestacion)");
+      stq2.setInteger("_idestacion",idEstacion);
+      stq2.setResultTransformer(Transformers.aliasToBean(MedicionJson.class));
+      ls = stq2.list();
+      String sp =";";
+      for(String se : sensores){  
+      List<MedicionJson> filter = (List<MedicionJson>)(ls.stream().filter(x->x.getTipoSensor().equals(se)).collect(Collectors.toList()));
+      List<String> dt = new ArrayList<>();
+      MedicionJson max =filter.stream()
+      .max(Comparator.comparing(MedicionJson::getFechayHora))
+      .orElseThrow(NoSuchElementException::new);
+      
+      datos.put(se,max.getFecha()+sp+max.getHora()+sp+max.getDatoObtenido()+sp+max.getUnidades());
       }
       
       tx.commit();

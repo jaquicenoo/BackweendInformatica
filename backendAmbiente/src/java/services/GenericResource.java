@@ -75,7 +75,7 @@ public class GenericResource {
         @POST
     @Path("getAllMedicionesByEstacion")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getAllMedicionesByEstacion(String idEstacion){
+    public Response getAllMedicionesByEstacion(String idEstacion){
        Gson gson = new Gson();
         String json="";
         Type listType=null;
@@ -93,7 +93,34 @@ public class GenericResource {
           ex.printStackTrace(); 
        }
       
-       return json;
+       return Response.ok(json).header("Access-Control-Allow-Origin", "*")
+      .header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
+      .header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
+    }
+            @POST
+    @Path("getUltimaMedicionByEstacion")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getUltimaMedicionByEstacion(String idEstacion){
+       Gson gson = new Gson();
+        String json="";
+        Type listType=null;
+       HashMap<String,String> lm = null;
+       try{
+           lm = helper.getUltimaMedicionByEstacion(Integer.parseInt(idEstacion));          
+       }catch(Exception ex){
+           ex.printStackTrace();
+       }
+       try{
+         listType = new TypeToken<HashMap<String,String>>() {}.getType();
+        json =gson.toJson(lm,listType); 
+       }
+       catch(JsonIOException ex){
+          ex.printStackTrace(); 
+       }
+      
+       return Response.ok(json).header("Access-Control-Allow-Origin", "*")
+      .header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
+      .header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
     }
         @POST
     @Path("saveMedicion")
@@ -108,12 +135,14 @@ public class GenericResource {
       }catch(Exception ex){
           ex.printStackTrace();
       }
-      return Response.ok().entity(me).build();
+      return Response.ok(me).header("Access-Control-Allow-Origin", "*")
+      .header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
+      .header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With").build();
     }
       @GET
     @Path("getAllEstaciones")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getAllEstaciones(){
+    public Response getAllEstaciones(){
        Gson gson = new Gson();
        Type listType=null;
        String json="";
@@ -130,12 +159,12 @@ public class GenericResource {
        catch(JsonIOException ex){
           ex.printStackTrace(); 
        }
-       return json;
+       return Response.ok(json).header("Access-Control-Allow-Origin", "*").build();
     }
           @GET
     @Path("getAllSensores")
     @Produces(MediaType.APPLICATION_JSON)
-    public String getAllSensores(){
+    public Response getAllSensores(){
        Gson gson = new Gson();
        Type listType=null;
        String json="";
@@ -152,6 +181,6 @@ public class GenericResource {
        catch(JsonIOException ex){
           ex.printStackTrace(); 
        }
-       return json;
+       return Response.ok(json).header("Access-Control-Allow-Origin", "*").build();
     }
 }
